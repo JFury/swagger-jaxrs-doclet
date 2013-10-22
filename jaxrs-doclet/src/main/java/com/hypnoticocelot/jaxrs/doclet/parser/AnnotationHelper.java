@@ -46,6 +46,31 @@ public class AnnotationHelper {
         return null;
     }
 
+    public static String getAnnotationValue(AnnotationDesc[] annotations, String annotationClass, String defaultVal) {
+        for (AnnotationDesc annotationDesc : annotations) {
+            if (annotationDesc.annotationType().qualifiedTypeName().equals(annotationClass)) {
+                for (AnnotationDesc.ElementValuePair pair : annotationDesc.elementValues()) {
+                    if (pair.element().name().equals("value")) {
+                        return pair.value().toString();
+                    }
+                }
+            }
+        }
+
+        return defaultVal;
+    }
+
+    public static boolean isAnnotationPresented(AnnotationDesc[] annotations, String annotationClass) {
+        for (AnnotationDesc annotationDesc : annotations) {
+            if (annotationDesc.annotationType().qualifiedTypeName().equals(annotationClass)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
     /**
      * Determines the String representation of the object Type.
      */

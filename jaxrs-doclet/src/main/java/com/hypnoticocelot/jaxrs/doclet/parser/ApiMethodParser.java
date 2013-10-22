@@ -19,6 +19,9 @@ import static com.hypnoticocelot.jaxrs.doclet.parser.AnnotationHelper.parsePath;
 
 public class ApiMethodParser {
 
+    public static final String ROLES_ALLOWED = "javax.annotation.security.RolesAllowed";
+    public static final String PERMIT_ALL = "javax.annotation.security.PermitAll";
+
     private final DocletOptions options;
     private final Translator translator;
     private final String parentPath;
@@ -96,6 +99,15 @@ public class ApiMethodParser {
         }
         String firstSentences = sentences.toString();
 
+
+        String rolesInfo = getRolesInfo(methodDoc.annotations());
+        if(rolesInfo == null) {
+            rolesInfo = getRolesInfo(methodDoc.containingClass().annotations());
+        }
+        if(rolesInfo == null) {
+            rolesInfo = "Anu";
+        }
+
         return new Method(
                 httpMethod,
                 methodDoc.name(),
@@ -103,9 +115,20 @@ public class ApiMethodParser {
                 parameters,
                 responseMessages,
                 firstSentences,
-                methodDoc.commentText().replace(firstSentences, ""),
+                methodDoc.commentText().replace(firstSentences, "") + "\n ROLES: " + rolesInfo,
                 returnType
         );
+    }
+
+    private String getRolesInfo(AnnotationDesc[] annotationDescs) {
+        String rolesInfo;
+        if(AnnotationHelper.isAnnotationPresented(annotationDescs, PERMIT_ALL)) {
+            rolesInfo = "Any";
+        } else {
+            rolesInfo=AnnotationHelper.getAnnotationValue(annotationDescs, ROLES_ALLOWED, null);
+        }
+
+        return rolesInfo;
     }
 
     private boolean isCollection(String s) {
