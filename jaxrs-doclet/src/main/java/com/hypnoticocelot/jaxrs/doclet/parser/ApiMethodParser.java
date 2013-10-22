@@ -84,7 +84,7 @@ public class ApiMethodParser {
         if (options.isParseModels()) {
             models.addAll(new ApiModelParser(options, translator, type).parse());
             if(elementType != null) {
-                models.addAll(new ApiModelParser(options, translator, type).parse());
+                models.addAll(new ApiModelParser(options, translator, elementType).parse());
             }
         }
 
