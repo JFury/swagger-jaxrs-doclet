@@ -59,6 +59,7 @@
         </repository>
     </repositories>
 
+<!--
     <distributionManagement>
         <snapshotRepository>
             <id>sonatype-nexus-snapshots</id>
@@ -71,6 +72,7 @@
             <url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
+-->
 
     <profiles>
         <profile>
