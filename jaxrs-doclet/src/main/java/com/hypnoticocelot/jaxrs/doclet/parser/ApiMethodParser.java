@@ -73,7 +73,12 @@ public class ApiMethodParser {
 
         // return type
         Type type = methodDoc.returnType();
+        ParameterizedType parameterizedType = type.asParameterizedType();
         String returnType = translator.typeName(type).value();
+        if(isCollection(returnType) && parameterizedType != null) {
+            returnType = returnType + "[" + translator.typeName(parameterizedType.typeArguments()[0]).value() + "]";
+        }
+
         if (options.isParseModels()) {
             models.addAll(new ApiModelParser(options, translator, type).parse());
         }
@@ -96,6 +101,10 @@ public class ApiMethodParser {
                 methodDoc.commentText().replace(firstSentences, ""),
                 returnType
         );
+    }
+
+    private boolean isCollection(String s) {
+        return "List".equals(s) || "Set".equals(s);
     }
 
     public Set<Model> models() {
