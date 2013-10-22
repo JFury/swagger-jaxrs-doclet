@@ -74,13 +74,18 @@ public class ApiMethodParser {
         // return type
         Type type = methodDoc.returnType();
         ParameterizedType parameterizedType = type.asParameterizedType();
+        Type elementType = null;
         String returnType = translator.typeName(type).value();
         if(isCollection(returnType) && parameterizedType != null) {
-            returnType = returnType + "[" + translator.typeName(parameterizedType.typeArguments()[0]).value() + "]";
+            elementType = parameterizedType.typeArguments()[0];
+            returnType = returnType + "[" + translator.typeName(elementType).value() + "]";
         }
 
         if (options.isParseModels()) {
             models.addAll(new ApiModelParser(options, translator, type).parse());
+            if(elementType != null) {
+                models.addAll(new ApiModelParser(options, translator, type).parse());
+            }
         }
 
         // First Sentence of Javadoc method description
