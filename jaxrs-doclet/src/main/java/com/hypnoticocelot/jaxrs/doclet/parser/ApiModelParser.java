@@ -112,7 +112,7 @@ public class ApiModelParser {
         if (pt != null) {
             Type[] typeArgs = pt.typeArguments();
             if (typeArgs != null && typeArgs.length > 0) {
-                result = typeArgs[0];
+                result = type.simpleTypeName().endsWith("Map") && typeArgs.length > 1 ?  typeArgs[1] : typeArgs[0];
             }
         }
         return result;
