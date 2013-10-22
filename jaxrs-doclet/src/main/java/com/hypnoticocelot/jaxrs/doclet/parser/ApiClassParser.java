@@ -20,12 +20,14 @@ public class ApiClassParser {
     private final ClassDoc classDoc;
     private final String rootPath;
     private final Set<Model> models;
+    private final String description;
 
     public ApiClassParser(DocletOptions options, ClassDoc classDoc) {
         this.options = options;
         this.classDoc = classDoc;
         this.rootPath = parsePath(classDoc.annotations());
         this.models = new LinkedHashSet<Model>();
+        this.description = classDoc.commentText();
     }
 
     public String getRootPath() {
@@ -77,4 +79,7 @@ public class ApiClassParser {
         return models;
     }
 
+    public String getDescription() {
+        return description;
+    }
 }

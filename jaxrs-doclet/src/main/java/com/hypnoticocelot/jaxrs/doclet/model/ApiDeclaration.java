@@ -14,18 +14,20 @@ public class ApiDeclaration {
     private String resourcePath;
     private Collection<Api> apis;
     private Map<String, Model> models;
+    private String description;
 
     @SuppressWarnings("unused")
     private ApiDeclaration() {
     }
 
-    public ApiDeclaration(String apiVersion, String basePath, String resourcePath, Collection<Api> apis, Map<String, Model> models) {
+    public ApiDeclaration(String apiVersion, String basePath, String resourcePath, Collection<Api> apis, Map<String, Model> models, String description) {
         this.apiVersion = apiVersion;
         this.swaggerVersion = "1.1";
         this.basePath = basePath;
         this.resourcePath = resourcePath;
         this.apis = apis.isEmpty() ? null : apis;
         this.models = models.isEmpty() ? null : models;
+        this.description = description;
     }
 
     public String getApiVersion() {
@@ -50,6 +52,10 @@ public class ApiDeclaration {
 
     public Map<String, Model> getModels() {
         return models;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     @Override

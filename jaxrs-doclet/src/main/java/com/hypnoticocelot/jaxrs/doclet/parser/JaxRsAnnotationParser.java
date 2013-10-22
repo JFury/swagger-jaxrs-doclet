@@ -46,7 +46,7 @@ public class JaxRsAnnotationParser {
                 });
                 // The idea (and need) for the declaration is that "/foo" and "/foo/annotated" are stored in separate
                 // Api classes but are part of the same resource.
-                declarations.add(new ApiDeclaration(options.getApiVersion(), options.getApiBasePath(), classParser.getRootPath(), apis, models));
+                declarations.add(new ApiDeclaration(options.getApiVersion(), options.getApiBasePath(), classParser.getRootPath(), apis, models, classParser.getDescription()));
             }
             writeApis(declarations);
             return true;
@@ -64,7 +64,7 @@ public class JaxRsAnnotationParser {
             String resourcePath = api.getResourcePath();
             if (!Strings.isNullOrEmpty(resourcePath)) {
                 String resourceName = resourcePath.replaceFirst("/", "").replaceAll("/", "_").replaceAll("[\\{\\}]", "");
-                resources.add(new ResourceListingAPI("/" + resourceName + ".{format}", ""));
+                resources.add(new ResourceListingAPI("/" + resourceName + ".{format}", api.getDescription()));
                 File apiFile = new File(outputDirectory, resourceName + ".json");
                 recorder.record(apiFile, api);
             }
