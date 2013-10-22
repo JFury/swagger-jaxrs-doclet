@@ -32,16 +32,12 @@ public class ApiModelParser {
     }
 
     private void parseModel(Type type) {
-        boolean isPrimitive = /* type.isPrimitive()? || */ AnnotationHelper.isPrimitive(type);
-        boolean isJavaxType = type.qualifiedTypeName().startsWith("javax.");
-        boolean isBaseObject = type.qualifiedTypeName().equals("java.lang.Object");
-        boolean isTypeToTreatAsOpaque = options.getTypesToTreatAsOpaque().contains(type.qualifiedTypeName());
         ClassDoc classDoc = type.asClassDoc();
-        if (isPrimitive || isJavaxType || isBaseObject || isTypeToTreatAsOpaque || classDoc == null || alreadyStoredType(type)) {
+        if (!isParsableType(type) || alreadyStoredType(type)) {
             return;
         }
 
-        Map<String, Type> types = findReferencedTypes(classDoc);
+        Map<String, Type> types = findReferencedTypes(classDoc, new HashMap<String, Type>());
         Map<String, Property> elements = findReferencedElements(types);
         if (!elements.isEmpty()) {
             models.add(new Model(translator.typeName(type).value(), elements));
@@ -49,14 +45,12 @@ public class ApiModelParser {
         }
     }
 
-    private Map<String, Type> findReferencedTypes(ClassDoc classDoc) {
-        Map<String, Type> elements = new HashMap<String, Type>();
-
+    private Map<String, Type> findReferencedTypes(ClassDoc classDoc, Map<String, Type> elements) {
         FieldDoc[] fieldDocs = classDoc.fields();
         if (fieldDocs != null) {
             for (FieldDoc field : fieldDocs) {
                 String name = translator.fieldName(field).value();
-                if (name != null && !elements.containsKey(name)) {
+                if (!field.isStatic() && name != null && !elements.containsKey(name)) {
                     elements.put(name, field.type());
                 }
             }
@@ -71,7 +65,25 @@ public class ApiModelParser {
                 }
             }
         }
+
+        // Add superclass' properties to the model
+        Type superClassType = classDoc.superclassType();
+        if(superClassType != null) {
+            if(isParsableType(superClassType) && !superClassType.qualifiedTypeName().startsWith("java."))
+                findReferencedTypes(superClassType.asClassDoc(), elements);
+        }
+
         return elements;
+    }
+
+    private boolean isParsableType(Type type) {
+        boolean isPrimitive = /* type.isPrimitive()? || */ AnnotationHelper.isPrimitive(type);
+        boolean isJavaxType = type.qualifiedTypeName().startsWith("javax.");
+        boolean isBaseObject = type.qualifiedTypeName().equals("java.lang.Object");
+        boolean isTypeToTreatAsOpaque = options.getTypesToTreatAsOpaque().contains(type.qualifiedTypeName());
+        ClassDoc classDoc = type.asClassDoc();
+
+        return  !(isPrimitive || isJavaxType || isBaseObject || isTypeToTreatAsOpaque || classDoc == null );
     }
 
     private Map<String, Property> findReferencedElements(Map<String, Type> types) {
