@@ -18,12 +18,14 @@ public class ApiModelParser {
     private final Translator translator;
     private final Type rootType;
     private final Set<Model> models;
+    private final Map<String, String> fieldDesc;
 
     public ApiModelParser(DocletOptions options, Translator translator, Type rootType) {
         this.options = options;
         this.translator = translator;
         this.rootType = rootType;
         this.models = new LinkedHashSet<Model>();
+        fieldDesc = new HashMap<String, String>();
     }
 
     public Set<Model> parse() {
@@ -52,6 +54,9 @@ public class ApiModelParser {
                 String name = translator.fieldName(field).value();
                 if (!field.isStatic() && name != null && !elements.containsKey(name)) {
                     elements.put(name, field.type());
+                    if(field.commentText() != null) {
+                        fieldDesc.put(name, field.commentText());
+                    }
                 }
             }
         }
@@ -62,6 +67,9 @@ public class ApiModelParser {
                 String name = translator.methodName(method).value();
                 if (name != null && !elements.containsKey(name)) {
                     elements.put(name, method.returnType());
+                    if(method.commentText() != null) {
+                        fieldDesc.put(name, method.commentText());
+                    }
                 }
             }
         }
@@ -101,7 +109,7 @@ public class ApiModelParser {
             if (typeClassDoc != null && typeClassDoc.isEnum()) {
                 property = new Property(typeClassDoc.enumConstants(), null);
             } else {
-                property = new Property(propertyName, null, containerTypeOf);
+                property = new Property(propertyName, fieldDesc.get(propertyName), containerTypeOf);
             }
             elements.put(typeName, property);
         }
