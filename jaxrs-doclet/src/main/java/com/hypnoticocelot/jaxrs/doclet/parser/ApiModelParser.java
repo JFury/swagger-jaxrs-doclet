@@ -107,7 +107,7 @@ public class ApiModelParser {
             String propertyName = translator.typeName(type).value();
             Property property;
             if (typeClassDoc != null && typeClassDoc.isEnum()) {
-                property = new Property(typeClassDoc.enumConstants(), null);
+                property = new Property(typeClassDoc.enumConstants(), fieldDesc.get(propertyName));
             } else {
                 property = new Property(propertyName, fieldDesc.get(propertyName), containerTypeOf);
             }
