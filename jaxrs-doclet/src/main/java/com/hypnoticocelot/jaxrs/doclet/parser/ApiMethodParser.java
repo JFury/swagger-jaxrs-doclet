@@ -109,6 +109,16 @@ public class ApiMethodParser {
             rolesInfo = ANY_ROLES;
         }
 
+        StringBuilder additionalInfo = new StringBuilder("</br> ROLES: " + rolesInfo);
+
+        String[] jsonView = AnnotationHelper.getJsonViews(methodDoc.annotations());
+        if(jsonView != null) {
+            additionalInfo.append("</br> ").append("VIEWS: ");
+            for(int i=0; i<jsonView.length; i++){
+                additionalInfo.append(i>0?",":"").append(jsonView[i]);
+            }
+        }
+
         return new Method(
                 httpMethod,
                 methodDoc.name(),
@@ -116,17 +126,19 @@ public class ApiMethodParser {
                 parameters,
                 responseMessages,
                 firstSentences,
-                methodDoc.commentText().replace(firstSentences, "") + "\n ROLES: " + rolesInfo,
+                methodDoc.commentText().replace(firstSentences, "") + additionalInfo.toString(),
                 returnType
         );
     }
 
     private String getRolesInfo(AnnotationDesc[] annotationDescs) {
-        String rolesInfo;
+        String rolesInfo=null;
+        AnnotationValue annotationVal;
+
         if(AnnotationHelper.isAnnotationPresented(annotationDescs, PERMIT_ALL)) {
             rolesInfo = ANY_ROLES;
-        } else {
-            rolesInfo=AnnotationHelper.getAnnotationValue(annotationDescs, ROLES_ALLOWED, null);
+        } else if ((annotationVal = AnnotationHelper.getAnnotationValue(annotationDescs, ROLES_ALLOWED)) != null) {
+            rolesInfo = annotationVal.toString();
         }
 
         return rolesInfo;

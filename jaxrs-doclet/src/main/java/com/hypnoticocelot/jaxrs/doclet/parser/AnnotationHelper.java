@@ -3,6 +3,7 @@ package com.hypnoticocelot.jaxrs.doclet.parser;
 import com.google.common.base.Predicate;
 import com.hypnoticocelot.jaxrs.doclet.DocletOptions;
 import com.sun.javadoc.AnnotationDesc;
+import com.sun.javadoc.AnnotationValue;
 import com.sun.javadoc.Parameter;
 import com.sun.javadoc.Type;
 
@@ -16,7 +17,8 @@ public class AnnotationHelper {
     private static final String JAX_RS_PATH_PARAM = "javax.ws.rs.PathParam";
     private static final String JAX_RS_QUERY_PARAM = "javax.ws.rs.QueryParam";
     private static final String JERSEY_MULTIPART_FORM_PARAM = "com.sun.jersey.multipart.FormDataParam";
-    
+    public static final String JSON_VIEW = "com.fasterxml.jackson.annotation.JsonView";
+
     @SuppressWarnings("serial")
     static final List<String> PRIMITIVES = new ArrayList<String>() {{
         add("byte");
@@ -46,18 +48,18 @@ public class AnnotationHelper {
         return null;
     }
 
-    public static String getAnnotationValue(AnnotationDesc[] annotations, String annotationClass, String defaultVal) {
+    public static AnnotationValue getAnnotationValue(AnnotationDesc[] annotations, String annotationClass) {
         for (AnnotationDesc annotationDesc : annotations) {
             if (annotationDesc.annotationType().qualifiedTypeName().equals(annotationClass)) {
                 for (AnnotationDesc.ElementValuePair pair : annotationDesc.elementValues()) {
                     if (pair.element().name().equals("value")) {
-                        return pair.value().toString();
+                        return pair.value();
                     }
                 }
             }
         }
 
-        return defaultVal;
+        return null;
     }
 
     public static boolean isAnnotationPresented(AnnotationDesc[] annotations, String annotationClass) {
@@ -70,6 +72,25 @@ public class AnnotationHelper {
         return false;
     }
 
+    public static String[] getJsonViews(AnnotationDesc[] annotations) {
+        String res[] = null;
+
+        AnnotationValue jsonView = getAnnotationValue(annotations, JSON_VIEW);
+        if(jsonView != null) {
+            if(jsonView.value() instanceof Type) {
+                res = new String[] {((Type) jsonView.value()).typeName()};
+            } else if(jsonView.value() instanceof AnnotationValue[]) {
+                AnnotationValue[] values = (AnnotationValue[]) jsonView.value();
+
+                res = new String[values.length];
+                for(int i=0; i<values.length; i++) {
+                    res[i] = ((Type)values[i].value()).typeName();
+                }
+            }
+        }
+
+        return res;
+    }
 
     /**
      * Determines the String representation of the object Type.
