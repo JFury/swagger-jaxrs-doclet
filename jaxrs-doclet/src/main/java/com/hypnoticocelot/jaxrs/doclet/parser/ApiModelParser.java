@@ -48,7 +48,7 @@ public class ApiModelParser {
     }
 
     private Map<String, Type> findReferencedTypes(ClassDoc classDoc, Map<String, Type> elements) {
-        FieldDoc[] fieldDocs = classDoc.fields();
+        FieldDoc[] fieldDocs = classDoc.fields(false);
         if (fieldDocs != null) {
             for (FieldDoc field : fieldDocs) {
                 String name = translator.fieldName(field).value();
