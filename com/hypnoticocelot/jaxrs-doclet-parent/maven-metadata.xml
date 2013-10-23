@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.hypnoticocelot</groupId>
+  <artifactId>jaxrs-doclet-parent</artifactId>
+  <versioning>
+    <versions>
+      <version>0.0.3-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20131023122249</lastUpdated>
+  </versioning>
+</metadata>
