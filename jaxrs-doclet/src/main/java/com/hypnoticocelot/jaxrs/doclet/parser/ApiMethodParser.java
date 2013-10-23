@@ -21,6 +21,7 @@ public class ApiMethodParser {
 
     public static final String ROLES_ALLOWED = "javax.annotation.security.RolesAllowed";
     public static final String PERMIT_ALL = "javax.annotation.security.PermitAll";
+    public static final String ANY_ROLES = "Any";
 
     private final DocletOptions options;
     private final Translator translator;
@@ -105,7 +106,7 @@ public class ApiMethodParser {
             rolesInfo = getRolesInfo(methodDoc.containingClass().annotations());
         }
         if(rolesInfo == null) {
-            rolesInfo = "Anu";
+            rolesInfo = ANY_ROLES;
         }
 
         return new Method(
@@ -123,7 +124,7 @@ public class ApiMethodParser {
     private String getRolesInfo(AnnotationDesc[] annotationDescs) {
         String rolesInfo;
         if(AnnotationHelper.isAnnotationPresented(annotationDescs, PERMIT_ALL)) {
-            rolesInfo = "Any";
+            rolesInfo = ANY_ROLES;
         } else {
             rolesInfo=AnnotationHelper.getAnnotationValue(annotationDescs, ROLES_ALLOWED, null);
         }
