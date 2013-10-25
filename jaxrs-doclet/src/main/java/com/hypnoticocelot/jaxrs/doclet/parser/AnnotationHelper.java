@@ -117,7 +117,10 @@ public class AnnotationHelper {
             type = "int";
         } else if (type.equalsIgnoreCase("arraylist") || type.equalsIgnoreCase("linkedlist")) {
             type = "List";
+        } else if(type.equalsIgnoreCase("inputstream")) {
+            type = "file";
         }
+
         return type;
     }
 
@@ -145,6 +148,12 @@ public class AnnotationHelper {
         String name = p.getAnnotationValue(JAX_RS_PATH_PARAM, "value");
         if (name == null) {
             name = p.getAnnotationValue(JAX_RS_QUERY_PARAM, "value");
+        }
+        if(name == null) {
+            name = p.getAnnotationValue(JERSEY_MULTIPART_FORM_PARAM, "value");
+        }
+        if(name == null) {
+            name = p.getAnnotationValue(JERSEY_MULTIPART_FORM_PARAM_NEW, "value");
         }
         if (name == null) {
             name = parameter.name();

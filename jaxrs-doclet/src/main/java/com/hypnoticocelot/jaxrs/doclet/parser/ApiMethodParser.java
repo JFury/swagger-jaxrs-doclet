@@ -23,6 +23,8 @@ public class ApiMethodParser {
     public static final String PERMIT_ALL = "javax.annotation.security.PermitAll";
     public static final String ANY_ROLES = "Any";
 
+    public static final String CONTENT_DISPOSITION = "org.glassfish.jersey.media.multipart.FormDataContentDisposition";
+
     private final DocletOptions options;
     private final Translator translator;
     private final String parentPath;
@@ -54,6 +56,7 @@ public class ApiMethodParser {
             if (options.isParseModels()) {
                 models.addAll(new ApiModelParser(options, translator, parameter.type()).parse());
             }
+
             parameters.add(new ApiParameter(
                     AnnotationHelper.paramTypeOf(parameter),
                     AnnotationHelper.paramNameOf(parameter),
@@ -153,6 +156,12 @@ public class ApiMethodParser {
     }
 
     private boolean shouldIncludeParameter(HttpMethod httpMethod, Parameter parameter) {
+        // Content disposition is a meta-parameter, i.e. just information about a parameter,
+        // So there will be another parameter with the same name, but with the real type
+        if(parameter.type().qualifiedTypeName().equals(CONTENT_DISPOSITION)) {
+            return false;
+        }
+
         List<AnnotationDesc> allAnnotations = Arrays.asList(parameter.annotations());
         Collection<AnnotationDesc> excluded = filter(allAnnotations, new AnnotationHelper.ExcludedAnnotations(options));
         if (!excluded.isEmpty()) {
