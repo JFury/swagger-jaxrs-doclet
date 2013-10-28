@@ -128,7 +128,7 @@ public class ApiMethodParser {
                 path,
                 parameters,
                 responseMessages,
-                firstSentences,
+                firstSentences + " Auth is required: " + (ANY_ROLES.equals(rolesInfo)?"No":"Yes"),
                 methodDoc.commentText().replace(firstSentences, "") + additionalInfo.toString(),
                 returnType
         );

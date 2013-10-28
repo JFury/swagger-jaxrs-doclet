@@ -54,8 +54,10 @@ public class ApiModelParser {
                 String name = translator.fieldName(field).value();
                 if (!field.isStatic() && name != null && !elements.containsKey(name)) {
                     elements.put(name, field.type());
-                    if(field.commentText() != null) {
-                        fieldDesc.put(name, field.commentText());
+
+                    StringBuilder buf = getFieldDescription(field);
+                    if(buf.length()>0) {
+                        fieldDesc.put(name, buf.toString());
                     }
                 }
             }
@@ -82,6 +84,23 @@ public class ApiModelParser {
         }
 
         return elements;
+    }
+
+    private StringBuilder getFieldDescription(MemberDoc field) {
+        StringBuilder buf = new StringBuilder();
+
+        if(field.commentText() != null) {
+            buf.append(field.commentText());
+        }
+
+        String[] views;
+        if((views=AnnotationHelper.getJsonViews(field.annotations()))!=null) {
+           if(buf.length()>0)
+               buf.append("; ");
+            buf.append("VIEWS: ").append(Arrays.toString(views));
+        }
+
+        return buf;
     }
 
     private boolean isParsableType(Type type) {
